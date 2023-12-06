@@ -15,4 +15,4 @@
 https://www.youtube.com/watch?v=APArnzlcRPA
 
 ***動作確認環境***
-Python 3.9.5
+*Python 3.9.5
