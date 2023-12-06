@@ -12,6 +12,7 @@ urls = {}
 facility_dict = {}
 takatsuki = {"高槻2号":"68","高槻3号":"196","高槻シースー":"243"}
 umeda = {"お初天神":"94","北新地":"144","東通":"155","かっぱ横丁":"120","東通本店":"116","S茶屋町":"106","東通3号":"103","茶屋町":"100","東中通":"76","梅田芝田町":"199"}
+kyobashi = {"京橋1号":"32","京橋本店":"174","京橋Door4":"236"}
 machine_list = ["JOYSOUND MAX GO","JOYSOUND MAX2","JOYSOUND MAX","LIVE DAM STADIUM","LIVE DAM Ai"]
 now_status = "※複数回実行ボタンを押さないでください。"
 button_state = "able"
@@ -32,6 +33,8 @@ def main():
     chk_umeda = Checkbutton(frame_1,text="梅田",variable = var_umeda)
     var_takatsuki = BooleanVar()
     chk_takatsuki = Checkbutton(frame_1,text="高槻",variable = var_takatsuki)
+    var_kyobashi = BooleanVar()
+    chk_kyobashi = Checkbutton(frame_1,text="京橋",variable = var_kyobashi)
     hour = StringVar()
     minute = StringVar()
     use_number = StringVar()
@@ -42,7 +45,7 @@ def main():
     minutebox = ttk.Combobox(frame_2,height=4,values=("00","15","30","45"),textvariable=minute)
     use_numberbox = ttk.Combobox(frame_2,height=10,values=("1","2","3","4","5","6","7","8","9","10"),textvariable=use_number)
     use_minutebox = ttk.Combobox(frame_2,height=19,values=("30","60","90","120","150","180","210","240","270","300","330","360","390","420","450","480","510","540","570"),textvariable=use_minute)
-    coursebox = ttk.Combobox(frame_2,height=10,values=("昼フリー","夕方フリー","通常"),textvariable=course)
+    coursebox = ttk.Combobox(frame_2,height=10,values=("昼フリー","夕方フリー","夜フリー","深夜フリー","エンドレスフリー","昼5時間パック","昼3時間パック","通常"),textvariable=course)
     hourbox.set("時")
     minutebox.set("分")
     use_number.set("人数")
@@ -65,13 +68,14 @@ def main():
     scrollbar.pack(side=LEFT,fill=Y)
     chk_umeda.pack(side=LEFT)
     chk_takatsuki.pack(side=LEFT)
+    chk_kyobashi.pack(side=LEFT)
     calender_date.pack(side=LEFT)
     hourbox.pack(side=TOP)
     minutebox.pack(side=TOP)
     use_numberbox.pack(side=TOP)
     use_minutebox.pack(side=TOP)
     coursebox.pack(side=TOP)
-    button = ttk.Button(frame_2,text="実行",command=lambda:[create_facility_dict(var_umeda.get(),var_takatsuki.get()),mult_get_table([arrange_date(calender_date),hour.get()+":"+minute.get(),use_number.get(),use_minute.get(),course.get()],tree)],state=button_state)
+    button = ttk.Button(frame_2,text="実行",command=lambda:[create_facility_dict(var_umeda.get(),var_takatsuki.get(),var_kyobashi.get()),mult_get_table([arrange_date(calender_date),hour.get()+":"+minute.get(),use_number.get(),use_minute.get(),course.get()],tree)],state=button_state)
     button.pack(side=TOP)
     status_label.pack(side=LEFT)
     #---フレームの配置---
@@ -81,12 +85,14 @@ def main():
     root.mainloop()
 
 def create_facility_dict(*args): #チェックボックスから店舗の辞書を生成（get_urls()に渡すため）
-    global facility_dict,umeda,takatsuki
+    global facility_dict,umeda,takatsuki,kyobashi
     facility_dict.clear() #初期化
     if args[0] == True:
         facility_dict.update(umeda)
     if args[1] == True:
         facility_dict.update(takatsuki)
+    if args[2] == True:
+        facility_dict.update(kyobashi)
 
 
 def arrange_date(calender_date): #日付の整形
@@ -118,13 +124,18 @@ def get_urls(conditions_row): #URLを取得
         conditions[4] = "2"
     elif conditions[4] == "夕方フリー":
         conditions[4] = "5"
-
-    if len(conditions) == 4:
-        for key,value in facility_dict.items():
-            urls[key] = "https://jankara.me/reservation/custom/user/getReservationFormDisp?reservationType=1&facilityId="+value+"&targetDate="+conditions[0]+"&overDay=0&startHours="+conditions[1]+"&useNumber="+conditions[2]+"&useDate="+conditions[0]+"+"+conditions[1]+"&useTime="+conditions[3]+"&courseId=1&reReservationRoom=0&reReservationMachine=0&gaReservationType=0&gaCalendarViaType=1&searchId=65129198"
-    elif len(conditions) == 5:
-        for key,value in facility_dict.items():
-            urls[key] = "https://jankara.me/reservation/custom/user/getReservationFormDisp?reservationType=1&facilityId="+value+"&targetDate="+conditions[0]+"&overDay=0&startHours="+conditions[1]+"&useNumber="+conditions[2]+"&useDate="+conditions[0]+"+"+conditions[1]+"&useTime="+conditions[3]+"&courseId="+conditions[4]+"&reReservationRoom=0&reReservationMachine=0&gaReservationType=0&gaCalendarViaType=1&searchId=65129198"
+    elif conditions[4] == "夜フリー":
+        conditions[4] = "6"
+    elif conditions[4] == "深夜フリー":
+        conditions[4] = "3"
+    elif conditions[4] == "エンドレスフリー":
+        conditions[4] = "10"
+    elif conditions[4] == "昼5時間パック":
+        conditions[4] = "14"
+    elif conditions[4] == "昼3時間パック":
+        conditions[4] = "12"
+    for key,value in facility_dict.items():
+        urls[key] = "https://jankara.me/reservation/custom/user/getReservationFormDisp?reservationType=1&facilityId="+value+"&targetDate="+conditions[0]+"&overDay=0&startHours="+conditions[1]+"&useNumber="+conditions[2]+"&useDate="+conditions[0]+"+"+conditions[1]+"&useTime="+conditions[3]+"&courseId=1&reReservationRoom=0&reReservationMachine=0&gaReservationType=0&gaCalendarViaType=1&searchId=65129198"
 def get_info(conditions_row):
     global machine_list
     get_urls(conditions_row)
