@@ -135,7 +135,7 @@ def get_urls(conditions_row): #URLを取得
     elif conditions[4] == "昼3時間パック":
         conditions[4] = "12"
     for key,value in facility_dict.items():
-        urls[key] = "https://jankara.me/reservation/custom/user/getReservationFormDisp?reservationType=1&facilityId="+value+"&targetDate="+conditions[0]+"&overDay=0&startHours="+conditions[1]+"&useNumber="+conditions[2]+"&useDate="+conditions[0]+"+"+conditions[1]+"&useTime="+conditions[3]+"&courseId=1&reReservationRoom=0&reReservationMachine=0&gaReservationType=0&gaCalendarViaType=1&searchId=65129198"
+        urls[key] = "https://jankara.me/reservation/custom/user/getReservationFormDisp?reservationType=1&facilityId="+value+"&targetDate="+conditions[0]+"&overDay=0&startHours="+conditions[1]+"&useNumber="+conditions[2]+"&useDate="+conditions[0]+"+"+conditions[1]+"&useTime="+conditions[3]+"&courseId="+conditions[4]+"&reReservationRoom=0&reReservationMachine=0&gaReservationType=0&gaCalendarViaType=1&searchId=65129198"
 def get_info(conditions_row):
     global machine_list
     get_urls(conditions_row)
